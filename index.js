@@ -49,6 +49,7 @@ async function startBot(TOKEN, CHANNEL_ID) {
         adapterCreator: guild.voiceAdapterCreator,
         selfDeaf: true,
         selfMute: false,
+        preferredEncryptionMode: 'aead_aes256_gcm_rtpsize',
       });
 
       console.log(`${client.user.username} دخل الروم`);
