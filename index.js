@@ -1,69 +1,72 @@
-const { Client, GatewayIntentBits } = require("discord.js");
-const { joinVoiceChannel } = require("@discordjs/voice");
-const express = require("express");
+import { Client, GatewayIntentBits } from "discord.js";
+import { joinVoiceChannel } from "@discordjs/voice";
 
-const app = express();
-app.get("/", (req, res) => res.send("Bots are online"));
+// توكنات البوتات (تحطهم في Railway Variables)
+const TOKENS = [
+  process.env.TOKEN_1,
+  process.env.TOKEN_2,
+  process.env.TOKEN_3,
+  process.env.TOKEN_4,
+  process.env.TOKEN_5,
+  process.env.TOKEN_6,
+  process.env.TOKEN_7,
+  process.env.TOKEN_8,
+  process.env.TOKEN_9,
+  process.env.TOKEN_10,
+  process.env.TOKEN_11
+];
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log("Web server running on port " + PORT));
+// ترتيب الرومات
+// أول 6 بوتات يدخلون روم واحد
+const MAIN_VOICE_CHANNEL_ID = process.env.MAIN_VOICE_CHANNEL_ID;
 
-// ====== 11 بوت ======
-const bots = [
-  { token: process.env.TOKEN1, channel: process.env.CHANNEL1 },
-  { token: process.env.TOKEN2, channel: process.env.CHANNEL2 },
-  { token: process.env.TOKEN3, channel: process.env.CHANNEL3 },
-  { token: process.env.TOKEN4, channel: process.env.CHANNEL4 },
-  { token: process.env.TOKEN5, channel: process.env.CHANNEL5 },
-  { token: process.env.TOKEN6, channel: process.env.CHANNEL6 },
-  { token: process.env.TOKEN7, channel: process.env.CHANNEL7 },
-  { token: process.env.TOKEN8, channel: process.env.CHANNEL8 },
-  { token: process.env.TOKEN9, channel: process.env.CHANNEL9 },
-  { token: process.env.TOKEN10, channel: process.env.CHANNEL10 },
-  { token: process.env.TOKEN11, channel: process.env.CHANNEL11 },
+// آخر 5 بوتات كل واحد بروم
+const INDIVIDUAL_CHANNEL_IDS = [
+  process.env.VOICE_CHANNEL_7,
+  process.env.VOICE_CHANNEL_8,
+  process.env.VOICE_CHANNEL_9,
+  process.env.VOICE_CHANNEL_10,
+  process.env.VOICE_CHANNEL_11
 ];
 
 const GUILD_ID = process.env.GUILD_ID;
 
-bots.forEach(({ token, channel }) => {
-  if (token && channel) startBot(token, channel);
-});
+TOKENS.forEach(async (token, index) => {
+  if (!token) return;
 
-async function startBot(TOKEN, CHANNEL_ID) {
   const client = new Client({
-    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates],
+    intents: [
+      GatewayIntentBits.Guilds,
+      GatewayIntentBits.GuildVoiceStates
+    ]
   });
 
-  client.once("clientready", async () => {
-    console.log(`${client.user.username} online`);
-    joinChannel();
-  });
+  client.once("ready", async () => {
+    console.log(`🤖 Bot ${index + 1} جاهز: ${client.user.tag}`);
+    const guild = await client.guilds.fetch(GUILD_ID);
 
-  async function joinChannel() {
-    try {
-      const guild = await client.guilds.fetch(GUILD_ID);
-      const voiceChannel = await guild.channels.fetch(CHANNEL_ID);
+    let channelId;
 
-      joinVoiceChannel({
-        channelId: voiceChannel.id,
-        guildId: guild.id,
-        adapterCreator: guild.voiceAdapterCreator,
-        selfDeaf: true,
-        selfMute: false,
-      });
-
-      console.log(`${client.user.username} دخل الروم`);
-    } catch (err) {
-      console.log(`خطأ ${TOKEN.slice(0, 6)}: ${err.message}`);
-      setTimeout(joinChannel, 5000);
+    if (index < 6) {
+      // أول 6 بوتات يدخلون روم واحد
+      channelId = MAIN_VOICE_CHANNEL_ID;
+    } else {
+      // آخر 5 بوتات كل واحد بروم
+      channelId = INDIVIDUAL_CHANNEL_IDS[index - 6];
     }
-  }
 
-  client.on("voiceStateUpdate", async (oldState, newState) => {
-    if (oldState.member?.id === client.user.id && !newState.channelId) {
-      joinChannel();
-    }
+    const channel = await guild.channels.fetch(channelId);
+
+    joinVoiceChannel({
+      channelId: channel.id,
+      guildId: guild.id,
+      adapterCreator: guild.voiceAdapterCreator,
+      selfMute: false,   // ❌ بدون ميوت
+      selfDeaf: true     // ✅ عليه دفن
+    });
+
+    console.log(`🔊 Bot ${index + 1} دخل القناة (Deafened)`);
   });
 
-  await client.login(TOKEN);
-}
+  client.login(token);
+});
