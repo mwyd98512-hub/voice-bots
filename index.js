@@ -1,6 +1,5 @@
 const { Client, GatewayIntentBits } = require("discord.js");
 const { joinVoiceChannel } = require("@discordjs/voice");
-require("dotenv").config(); // للتأكد من قراءة Variables
 const express = require("express");
 
 const app = express();
@@ -9,10 +8,8 @@ app.get("/", (req, res) => res.send("Bots are online"));
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log("Web server running on port " + PORT));
 
-const GUILD_ID = process.env.GUILD_ID;
-
-// مصفوفة البوتات مع التوكن والقناة المحددة لكل واحد
-const botsConfig = [
+// ====== 11 بوت ======
+const bots = [
   { token: process.env.TOKEN1, channel: process.env.CHANNEL1 },
   { token: process.env.TOKEN2, channel: process.env.CHANNEL2 },
   { token: process.env.TOKEN3, channel: process.env.CHANNEL3 },
@@ -26,7 +23,9 @@ const botsConfig = [
   { token: process.env.TOKEN11, channel: process.env.CHANNEL11 },
 ];
 
-botsConfig.forEach(({ token, channel }) => {
+const GUILD_ID = process.env.GUILD_ID;
+
+bots.forEach(({ token, channel }) => {
   if (token && channel) startBot(token, channel);
 });
 
@@ -35,7 +34,7 @@ async function startBot(TOKEN, CHANNEL_ID) {
     intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates],
   });
 
-  client.once("clientReady", async () => {
+  client.once("clientready", async () => {
     console.log(`${client.user.username} online`);
     joinChannel();
   });
@@ -49,15 +48,14 @@ async function startBot(TOKEN, CHANNEL_ID) {
         channelId: voiceChannel.id,
         guildId: guild.id,
         adapterCreator: guild.voiceAdapterCreator,
-        selfDeaf: true,    // البوت Deaf → ما يسمع القناة
-        selfMute: false,   // المايك مفتوح بصريًا → صامت فعليًا
-        preferredEncryptionMode: "aead_aes256_gcm_rtpsize", // لتجنب DAVE
+        selfDeaf: true,
+        selfMute: false,
       });
 
-      console.log(`${client.user.username} دخل الروم المحدد`);
+      console.log(`${client.user.username} دخل الروم`);
     } catch (err) {
-      console.log(`${TOKEN.slice(0,6)} خطأ: ${err.message}`);
-      setTimeout(joinChannel, 5000); // إعادة محاولة كل 5 ثواني
+      console.log(`خطأ ${TOKEN.slice(0, 6)}: ${err.message}`);
+      setTimeout(joinChannel, 5000);
     }
   }
 
