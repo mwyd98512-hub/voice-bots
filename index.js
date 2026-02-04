@@ -33,7 +33,7 @@ async function startBot(TOKEN, CHANNEL_ID) {
     intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates],
   });
 
-  client.once("ready", async () => {
+  client.once("clientReady", async () => {
     console.log(`${client.user.username} online`);
     joinChannel();
   });
