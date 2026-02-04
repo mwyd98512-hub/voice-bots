@@ -12,6 +12,14 @@ const bots = [
   { token: process.env.TOKEN1, channel: process.env.CHANNEL1 },
   { token: process.env.TOKEN2, channel: process.env.CHANNEL2 },
   { token: process.env.TOKEN3, channel: process.env.CHANNEL3 },
+  { token: process.env.TOKEN4, channel: process.env.CHANNEL4 },
+  { token: process.env.TOKEN5, channel: process.env.CHANNEL5 },
+  { token: process.env.TOKEN6, channel: process.env.CHANNEL6 },
+  { token: process.env.TOKEN7, channel: process.env.CHANNEL7 },
+  { token: process.env.TOKEN8, channel: process.env.CHANNEL8 },
+  { token: process.env.TOKEN9, channel: process.env.CHANNEL9 },
+  { token: process.env.TOKEN10, channel: process.env.CHANNEL10 },
+  { token: process.env.TOKEN11, channel: process.env.CHANNEL11 },
 ];
 
 const GUILD_ID = process.env.GUILD_ID;
@@ -25,7 +33,7 @@ async function startBot(TOKEN, CHANNEL_ID) {
     intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates],
   });
 
-  client.once("clientReady", async () => {
+  client.once("ready", async () => {
     console.log(`${client.user.username} online`);
     joinChannel();
   });
