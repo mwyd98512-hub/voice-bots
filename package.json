@@ -2,7 +2,7 @@
   "name": "multi-voice-bots",
   "version": "1.0.0",
   "main": "index.js",
-  "type": "module",     // ← هذا السطر يحل التحذير
+  "type": "module",
   "scripts": {
     "start": "node index.js"
   },
