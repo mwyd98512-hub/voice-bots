@@ -78,7 +78,7 @@ async function startBot(TOKEN, CHANNEL_ID) {
         guildId: guild.id,
         adapterCreator: guild.voiceAdapterCreator,
         selfDeaf: true,   // يسمعون القناة
-        selfMute: false,   // مايك مفتوح بصريًا
+        selfMute: true,   // مايك مفتوح بصريًا
         preferredEncryptionMode: "aead_aes256_gcm_rtpsize", // لتجنب DAVE
       });
 
